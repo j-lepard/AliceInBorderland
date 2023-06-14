@@ -1,6 +1,11 @@
 # AliceInBorderland
  a very simple text game - thats not completed. 
 
+## Installation
+- Windows only
+- compile with mingw or alternative
+- run the compiled (.exe) in Terminal.
+
 ## Things that work: 
 - move from room to room
 - take/drop items
