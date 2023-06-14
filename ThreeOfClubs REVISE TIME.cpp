@@ -68,6 +68,8 @@ class Room
     string lookRoom() {
         return description_; 
         }
+    
+    
 
     // Called when the player first enters a room (different that remaining timer which is called when player "look timer")
     int getRoomTimer() {
@@ -79,7 +81,7 @@ class Room
         }
 
     void resetRoomTimer() {
-        roomTimer_ =15;
+        roomTimer_;
         }    
 
 
@@ -93,14 +95,6 @@ class Room
         roomItems_[itemName] = item;
         }
    
-   void resetRoomItems(){
-        // rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
-        // rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
-        // rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
-        // rooms[0].addRoomItem("PAPER", gameItems["PAPER"]);
-        // rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
-        // rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
-        }
     // Taking an item need to convert from STRING to ITEM
     // Then remove the item from the roomInventory.
     // Same function required in player
@@ -112,8 +106,7 @@ class Room
     
     void listRoomInventory() {
         cout << "The room contains the following items: "<< endl;
-            for (const auto& pair : roomItems_) 
-            {
+            for (const auto& pair : roomItems_){
             cout << pair.first << endl;
             }
         }
@@ -194,10 +187,6 @@ class Player {
         }
     };
 
-// This was a duplicate. Put it back up at the start of Room Class. 
-// Room::Room(string description,  Player* p) 
-//     : description_(description), player_(p) {};
-
 class Action {
     public: 
     // This is our PURE VIRTUAL VOID function - there is no default
@@ -232,12 +221,13 @@ class takeAction: public Action {
         if(room.hasItem(object)){
             //Remove the item from the room's inventory
             Item item = room.takeRoomItem(object);
-            //Add the same item to the play inventory.
+            
+            //Add the same item to the player inventory.
             player.takeItem(item);
             cout << "you took the " << object << endl;
             } 
         else{
-            cout << "There's no such item in the room" << endl;
+            cout << "THERE IS NO SUCH ITEM IN THE ROOM" << endl;
             }
         }
 };
@@ -273,10 +263,22 @@ class lookAction: public Action{
         if(object == "ROOM" ) {
             cout << player.currentRoom->lookRoom() << endl;
             cout << endl;
-            cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
+            // Separated the Room inventory from the Look Table
+            /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
             room.listRoomInventory();
-            cout << endl;
+            cout << endl; */
             }
+        if(object == "TABLE"){
+            if(player.currentRoom->hasItem("TABLE")){
+                cout << "YOU SEE THE FOLLOWING ITEMS ON THE TABLE:" << endl;
+                player.currentRoom->listRoomInventory();
+                cout << endl;
+                }
+            else { 
+                cout << "THERE IS NO TABLE IN THIS ROOM" << endl;
+                cout << endl;
+                }
+        }
         if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
                 // Show items in the inventory... 
                 player.lookInventory();
@@ -293,7 +295,7 @@ class lookAction: public Action{
                 }
             }
         else
-            cout << "You entered an item the doesnt exist in the catalog" << endl;
+            cout << "You entered an item the doesnt yet have a corresponding \"Action\" " << endl;
         } 
     };
 class useAction: public Action{
@@ -788,6 +790,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
         rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
         rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
+        rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
 
         // Create the player to the first room after rooms initialization
        Arisu = Player(&rooms[12],true);
@@ -815,9 +818,13 @@ class Game //Purpose of the class is construct/initialize the various elements i
     // This function is the main game loop. It is called from main() and runs until the player dies or wins.
     void gameLoop() {
             cout << endl;
+            cout << "'ALICE IN BORDERLANDS' - A TEXT SURVIVAL GAME" << endl;
             cout << "---------------------------------------------------------" << endl;
-            cout << "[QUEEN OF HEARTS]: YOU HAVE JUST ENTERED THE GAME: 'ALICE IN BORDERLANDS'" << endl;
-
+            cout << "[QUEEN OF HEARTS]: YOU HAVE JUST ENTERED THE GAME: " << endl;
+            cout << "[QUEEN OF HEARTS]: THE OBJECTIVE OF THIS GAME IS TO MOVE BETWEEN ROOMS TO THE END" << endl;
+            cout << "[QUEEN OF HEARTS]: THINKING ABOUT YOUR DECISIONS WILL HAVE A NEGATIVE IMPACT ON YOUR HEALTH" << endl;
+            cout << "---------------------------------------------------------" << endl;
+            cout << endl;
             string roomDescription = Arisu.currentRoom->getDescription();
             if (!roomDescription.empty())
             {
@@ -915,6 +922,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
             rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
             rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
             rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
+            rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
 
         }
     };
@@ -924,15 +932,13 @@ int main()
     char playAgain = 'y';
     int gameAttempts_ = 0;
     Game game;
-    while (playAgain == 'y' || playAgain == 'Y')
-    {
+    while (playAgain == 'y' || playAgain == 'Y'){
         game.gameLoop();
-        //gameAttempts_++;
-         cout << "[QUEEN OF HEARTS]: YOU FAILED! WISH TO TRY AGAIN??" << endl;
+        
+        cout << "[QUEEN OF HEARTS]: YOU FAILED! WISH TO TRY AGAIN??" << endl;
         cin >> playAgain;
         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-        if(playAgain == 'y' || playAgain == 'Y')
-        {
+        if(playAgain == 'y' || playAgain == 'Y'){
             cout << "Game reset function" << endl;
             game.resetGame();
             gameAttempts_++;

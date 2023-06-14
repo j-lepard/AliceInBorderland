@@ -30,7 +30,7 @@ class Item
         {
         return name_;
         }
-    string getDescription() const 
+    string getItemDescription() const 
         {
         return description_;
         }
