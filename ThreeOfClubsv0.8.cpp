@@ -1,3 +1,44 @@
+// ALICE IN BORDERLAND - ASSIGNMENT #5
+
+/* 
+ Title: THREE_OF_CLUBS
+ Description: A simple Text Adventure game.. that remains as a beta release.
+ 
+ Date: 15-Jun 2023
+ Author: Jamie Lepard
+ Version: 0.8
+ Copyright: 2023 Jamie Lepard
+*/
+
+/*
+ DOCUMENTATION
+ 
+ Program Purpose:
+ 	A game that attempts to recreate the Three of Clubs puzzle from the Netflix program "Aice in Borderland"
+
+ Compile: g++ -o ThreeOfClubsv0.8.cpp
+ Execution: ThreeOfClubsv0.8.exe
+ 
+  
+ Classes: 
+    Item
+    Inventory
+    Room
+    Player
+    Control
+    Action
+    Game
+
+*/
+
+/* TEST PLAN
+    1. Row 1 output the correct results from 1 * (1-12)
+    2. Row 2-12 output correct results from 2-12
+    3. Pipe and character spacing are aligned vertically. 
+  
+*/
+
+
 #include "ITEM_H.h"
 #include "INVENTORY_H.h"
 #include <array>
