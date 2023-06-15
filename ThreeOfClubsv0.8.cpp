@@ -39,8 +39,6 @@
 */
 
 
-#include "ITEM_H.h"
-#include "INVENTORY_H.h"
 #include <array>
 #include <string>
 #include <iostream>
@@ -55,9 +53,133 @@
 
 using namespace std;
 
-//FORWARD DECLARE PLAYER
+//FORWARD DECLARE PLAYER Game and Room
 class Player;
 class Game;
+class Room;
+
+
+
+// Class declaration
+class Item
+    { 
+    private:
+    string name_;
+    int weight_; //at some point the player should not be able to carry more and has to drop something. 
+    string description_; 
+    bool collectible_; // can the item be picked up? 
+    bool combinable_; // can the item be combined with another? */
+    
+
+    public:
+    Item(string name, int weight, string description, bool collectible, bool combinable) 
+         : name_(name), weight_(weight), description_(description), collectible_(collectible), combinable_(combinable) {}
+    //Item(string name) : name_(name) {}
+    Item() : name_("") {}
+    
+    
+
+    //Function to return the 'name' of the item.
+    string getName() const 
+        {
+        return name_;
+        }
+    string getItemDescription() const 
+        {
+        return description_;
+        }
+    // Added - poss duplicat of getItemDescription
+    void look(Player& player, Room& room) {
+        // Perform the look behavior for this item
+        std::cout << description_ << std::endl;
+        // Additional logic specific to the item's behavior
+    }
+};
+
+// Class declaration
+class Inventory
+    {
+    private:
+    // InventoryItems as an UNORDERED_MAP
+    unordered_map<string, Item> inventoryItems_;
+    int itemCount;
+    
+public: 
+    Inventory() : itemCount(0) {}
+
+     // Pickup item and Add to Inventory
+     // max inventory is 5, so if item count < 5, ok to add, else, cout "error"
+    
+    void clear() 
+        {
+        inventoryItems_.clear();
+        }
+    
+    void addItem(const Item& item) 
+        {
+        if (inventoryItems_.size() < 5) 
+            {
+            inventoryItems_[item.getName()] = item;
+            } 
+        else 
+            {
+            cout << "You have maxed your inventory" << endl;
+            }
+        }
+    
+    // Taking an item need to convert from STRING to ITEM
+    // Then remove the item from the Inventory.
+    // Same function required in Room
+    Item takeItemInv(const string& itemName) 
+        {
+        Item takenItem = inventoryItems_[itemName];
+        inventoryItems_.erase(itemName);
+        return takenItem;
+        }
+
+
+    // Drop item from inventory
+    void subtrItem(const Item& item) 
+        {
+        auto iter = inventoryItems_.find(item.getName());
+            if (iter != inventoryItems_.end()) 
+                {
+                inventoryItems_.erase(iter);
+                }
+        }
+
+    // How many items are in the current inventory (count)
+    int size() const 
+        {
+        return itemCount;
+        }
+  
+    const Item& operator[](int i) const 
+        {
+        if (i < 0 || i >= inventoryItems_.size()) 
+            {
+            throw std::out_of_range("Invalid index");
+            }
+    
+        auto iter = inventoryItems_.begin();
+        advance(iter, i);
+        return iter->second;
+        }
+    void listInventory() 
+        {
+        cout << "The inventory contains the following items: "<< endl;
+            for (const auto& pair : inventoryItems_) 
+            {
+            cout << pair.first << endl;
+            }
+        }
+    
+    // This is correct from a syntax perspective. 
+    bool inInventory (const string& itemName) 
+        {
+        return inventoryItems_.find(itemName) != inventoryItems_.end();
+        }
+};
 
 class Room 
     {
@@ -228,6 +350,19 @@ class Player {
         }
     };
 
+unordered_map<string, Item> gameItems={
+        {"PHONE", Item("PHONE", 1, "A basic smartphone.", true, false)},
+        {"BOOK", Item("BOOK", 2, "An old and dusty book.", true, false)},
+        {"WATCH", Item("WATCH", 1, "A small pocketwatch. Mysterious as it has no obvious buttons", true, false)},
+        {"TABLE", Item("TABLE", 200, "A small plain table", false, false)},
+        {"MATCH", Item("MATCH", 1, "A book of matches", true, true)},
+        {"PAPER", Item("PAPER", 2, "A stack of approximately 20 sheets of paper", true, false)},
+        {"ROPE", Item("ROPE", 2, "a length of cord about 15 long. Looks weak", true, false)},
+        {"KEYS", Item("KEYS", 1, "Set of car keys, a house key and a Mysterious key", true, true)},
+        {"FLAMINGO", Item("FLAMINGO", 1, "Its a pink flamingo.\nApparently used to hit small round objects", true, true)},
+        {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)}
+        };
+
 class Action {
     public: 
     // This is our PURE VIRTUAL VOID function - there is no default
@@ -301,44 +436,67 @@ class lookAction: public Action{
     lookAction (){}
     void execute_action(Player& player, Room& room, string object) override{
         //DEBUG: cout << "you called the Look Action on:"<< object << endl;
-        if(object == "ROOM" ) {
-            cout << player.currentRoom->lookRoom() << endl;
-            cout << endl;
-            // Separated the Room inventory from the Look Table
-            /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
-            room.listRoomInventory();
-            cout << endl; */
+    
+    // Item Description function. 
+    // SHOULD BE constrained to items in the CURRENT ROOM or in INVENTORY!~
+    
+    auto it = gameItems.find(object);
+        if (it != gameItems.end()) {
+            it->second.look(player, room);
+            cout << "Yes, this item exists in the game" << endl;
             }
-        if(object == "TABLE"){
-            if(player.currentRoom->hasItem("TABLE")){
-                cout << "YOU SEE THE FOLLOWING ITEMS ON THE TABLE:" << endl;
-                player.currentRoom->listRoomInventory();
-                cout << endl;
-                }
-            else { 
-                cout << "THERE IS NO TABLE IN THIS ROOM" << endl;
-                cout << endl;
-                }
+        if(player.currentRoom->hasItem(object)){
+            cout << "The item is also in this room" << endl;
+            }
+        else{
+            cout << "The item is NOT in this GAME!" << endl;
+            }
         }
-        if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
-                // Show items in the inventory... 
-                player.lookInventory();
-                cout << endl;
-                }
-        if(object == "TIMER"){
-            if(player.hasItem("TIMER")){
-                cout << "THERE ARE: " << player.currentRoom->getRemainingTimeInRoom()  << " SECONDS REMAINING ON THE TIMER"<< endl;
-                cout << endl;
-                }
-            else { 
-                cout << "YOU DO NOT HAVE A TIMER IN YOUR INVENTORY" << endl;
-                cout << endl;
-                }
-            }
-        else
-            cout << "You entered an item the doesnt yet have a corresponding \"Action\" " << endl;
-        } 
-    };
+    
+    
+        
+        
+        
+        // if(object == "ROOM" ) {
+        //     cout << player.currentRoom->lookRoom() << endl;
+        //     cout << endl;
+        //     // Separated the Room inventory from the Look Table
+        //     /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
+        //     room.listRoomInventory();
+        //     cout << endl; */
+        //     }
+        // if(object == "TABLE"){
+        //     if(player.currentRoom->hasItem("TABLE")){
+        //         cout << "YOU SEE THE FOLLOWING ITEMS ON THE TABLE:" << endl;
+        //         player.currentRoom->listRoomInventory();
+        //         cout << endl;
+        //         }
+        //     else { 
+        //         cout << "THERE IS NO TABLE IN THIS ROOM" << endl;
+        //         cout << endl;
+        //         }
+        // }
+        // if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
+        //         // Show items in the inventory... 
+        //         player.lookInventory();
+        //         cout << endl;
+        //         }
+        // if(object == "TIMER"){
+        //     if(player.hasItem("TIMER")){
+        //         cout << "THERE ARE: " << player.currentRoom->getRemainingTimeInRoom()  << " SECONDS REMAINING ON THE TIMER"<< endl;
+        //         cout << endl;
+        //         }
+        //     else { 
+        //         cout << "YOU DO NOT HAVE A TIMER IN YOUR INVENTORY" << endl;
+        //         cout << endl;
+        //         }
+        //     }
+        // else
+        //     cout << "You entered an item the doesnt yet have a corresponding \"Action\" " << endl;
+        // } 
+        
+};
+
 class useAction: public Action{
     private:
     public: 
@@ -769,14 +927,14 @@ class Control {
             std::cout << "That didnt work. Try something else" << std::endl;
             }
     }
-    };
+};
 
 class Game //Purpose of the class is construct/initialize the various elements in the game. The rooms, doors, objects, and the player. 
 {
     private:
         
     public:
-    unordered_map<string, Item> gameItems;
+    
     array<Room,13> rooms;
     Player Arisu;
     Control controlArisu;    
@@ -814,21 +972,12 @@ class Game //Purpose of the class is construct/initialize the various elements i
        rooms[12].addDoor("STRAIGHT", &rooms[0]); //START
     
         // Create the ITEMS of the game.
-        gameItems["PHONE"] = Item("PHONE", 1, "A basic smartphone.", true, false);
-        gameItems["BOOK"] = Item("BOOK", 2, "An old and dusty book.", true, false);
-        gameItems["WATCH"] = Item("WATCH", 1, "A small pocketwatch. Mysterious as it has no obvious buttons", true, false);
-        gameItems["TABLE"] = Item("TABLE", 200, "A small plain table", false, false); //cannot pickup
-        gameItems["MATCH"] = Item("MATCH", 1, "A book of matches", true, true); //cam be used with paper
-        gameItems["PAPER"] = Item("PAPER", 2, "A stack of approximately 20 sheets of paper", true, false);
-        gameItems["ROPE"] = Item("ROPE", 2, "a length of cord about 15 long. Looks weak", true, false);
-        gameItems["KEYS"] = Item("KEYS",1,"Set of car keys, a house key and a Mysterious key", true, true);
-        gameItems["FLAMINGO"] = Item("FLAMINGO",1,"Its a pink flamingo.\nApparently used to hit small round objects", true, true);
-        gameItems["HATTER"] = Item("HATTER",1,"A Stange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true);
+        
         
         //Add the Game Items to their starting locations in Room Inventory:
         //need to pass addItem both the name of the item and the actual Item object as it is an unordered_map
         rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
-        rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
+        rooms[0].addRoomItem("WATCH", gameItems["WATCH"]);
         rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
         rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
         rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
@@ -908,7 +1057,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                     // Also intro a ternary operator "? with a : "
                 
                 // CLS - Clear the screen before printing the next room description
-                std::cout << "\033c"; //Clear the screen
+                //std::cout << "\033c"; //Clear the screen
                 if (commandVector.size() >= 2){
                     string verb = commandVector[0];
                     string object = commandVector[1];
@@ -945,32 +1094,33 @@ class Game //Purpose of the class is construct/initialize the various elements i
         }
     // GAME RESET FUNCTION ----- 
         
-        void resetGame()
+    void resetGame()
         {
-            // Player is reset to starting position and Alive.
-            Arisu = Player(&rooms[12],true);
-            
-            // Reset all rooms to unexplored 
-            // Reset all room timers. 
-            for (int i = 0; i < 13; i++){
-                rooms[i].resetExplored();
-                rooms[i].resetRoomTimer();
-                cout << "Room " << i << " has been reset" << endl;
-                }
-            // Reset player inventory to empty
-            Arisu.playerInventory.clear(); 
-            
-            // Reset room inventory --- future work to make this more scalable/consolidated.
-            rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
-            rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
-            rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
-            rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
-            rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
-            rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
-            rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
-
+        // Player is reset to starting position and Alive.
+        Arisu = Player(&rooms[12],true);
+        
+        // Reset all rooms to unexplored 
+        // Reset all room timers. 
+        for (int i = 0; i < 13; i++){
+            rooms[i].resetExplored();
+            rooms[i].resetRoomTimer();
+            cout << "Room " << i << " has been reset" << endl;
+            }
+        // Reset player inventory to empty
+        Arisu.playerInventory.clear(); 
+        
+        // Reset room inventory --- future work to make this more scalable/consolidated.
+        rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
+        rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
+        rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
+        rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
+        rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
+        rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
+        rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
+        rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
+        rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
         }
-    };
+};
 
 int main()
 {
