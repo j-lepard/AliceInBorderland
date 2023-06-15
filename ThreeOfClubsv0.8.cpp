@@ -32,9 +32,9 @@
 */
 
 /* TEST PLAN
-    1. Row 1 output the correct results from 1 * (1-12)
-    2. Row 2-12 output correct results from 2-12
-    3. Pipe and character spacing are aligned vertically. 
+    1. 
+    2. 
+    3.  
   
 */
 
@@ -95,6 +95,7 @@ class Room
             return doors_[direction];
             }
         }
+
     // If Room has NOT been explored, then provide the description
     // Also the player can call this function with a "Look Room" 
     string getDescription() {
@@ -110,12 +111,11 @@ class Room
         return description_; 
         }
     
-    
-
     // Called when the player first enters a room (different that remaining timer which is called when player "look timer")
     int getRoomTimer() {
         return roomTimer_;
         } 
+    
     // Reset Rooms: 
     void resetExplored() {
         explored_ = false;
@@ -219,7 +219,7 @@ class Player {
         playerInventory.listInventory();
         }
     
-    // Does the player have the item in inventory. Used for dropAction
+    // Does the player have the item in inventory? Used for dropAction
     // Move this up to the Inventory class, cause its an inventory thing, not a player thing.
     bool hasItem(const string& itemName) {
         bool itemExists = playerInventory.inInventory(itemName);
@@ -794,7 +794,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
         rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
         rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,20000);
-        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200);
+        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200);
        
        // Assign the Doors to each of the rooms below Arguments to addDoor are the direction and pointer to the new room.
        rooms[0].addDoor("RIGHT", &rooms[5]); //You die if you go this way 
@@ -816,15 +816,17 @@ class Game //Purpose of the class is construct/initialize the various elements i
         // Create the ITEMS of the game.
         gameItems["PHONE"] = Item("PHONE", 1, "A basic smartphone.", true, false);
         gameItems["BOOK"] = Item("BOOK", 2, "An old and dusty book.", true, false);
-        gameItems["TIMER"] = Item("TIMER", 1, "A a mysterious timer that had no obvious buttons", true, false);
+        gameItems["WATCH"] = Item("WATCH", 1, "A small pocketwatch. Mysterious as it has no obvious buttons", true, false);
         gameItems["TABLE"] = Item("TABLE", 200, "A small plain table", false, false); //cannot pickup
         gameItems["MATCH"] = Item("MATCH", 1, "A book of matches", true, true); //cam be used with paper
         gameItems["PAPER"] = Item("PAPER", 2, "A stack of approximately 20 sheets of paper", true, false);
         gameItems["ROPE"] = Item("ROPE", 2, "a length of cord about 15 long. Looks weak", true, false);
         gameItems["KEYS"] = Item("KEYS",1,"Set of car keys, a house key and a Mysterious key", true, true);
+        gameItems["FLAMINGO"] = Item("FLAMINGO",1,"Its a pink flamingo.\nApparently used to hit small round objects", true, true);
+        gameItems["HATTER"] = Item("HATTER",1,"A Stange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true);
+        
         //Add the Game Items to their starting locations in Room Inventory:
         //need to pass addItem both the name of the item and the actual Item object as it is an unordered_map
-    
         rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
         rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
         rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
@@ -832,6 +834,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
         rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
         rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
+        rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
+        rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
 
         // Create the player to the first room after rooms initialization
        Arisu = Player(&rooms[12],true);
@@ -863,7 +867,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
             cout << "---------------------------------------------------------" << endl;
             cout << "[QUEEN OF HEARTS]: YOU HAVE JUST ENTERED THE GAME: " << endl;
             cout << "[QUEEN OF HEARTS]: THE OBJECTIVE OF THIS GAME IS TO MOVE BETWEEN ROOMS TO THE END" << endl;
-            cout << "[QUEEN OF HEARTS]: THINKING ABOUT YOUR DECISIONS WILL HAVE A NEGATIVE IMPACT ON YOUR HEALTH" << endl;
+            cout << "[QUEEN OF HEARTS]: THINKING TOO LONG ABOUT YOUR DECISIONS WILL HAVE A NEGATIVE IMPACT ON YOUR HEALTH" << endl;
             cout << "---------------------------------------------------------" << endl;
             cout << endl;
             string roomDescription = Arisu.currentRoom->getDescription();
