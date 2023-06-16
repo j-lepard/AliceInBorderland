@@ -355,7 +355,7 @@ class Player {
     // Move this up to the Inventory class, cause its an inventory thing, not a player thing.
     bool hasItem(const string& itemName) {
         bool itemExists = playerInventory.inInventory(itemName);
-        cout << "Item '" << itemName << "' in inventory: " << (itemExists ? "true" : "false") << endl;
+        //DEBUG cout << "Item '" << itemName << "' in inventory: " << (itemExists ? "true" : "false") << endl;
         return itemExists;
         }
     };
