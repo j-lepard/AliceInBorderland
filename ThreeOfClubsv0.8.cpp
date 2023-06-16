@@ -440,42 +440,39 @@ class lookAction: public Action{
     // Item Description function. 
     // SHOULD BE constrained to items in the CURRENT ROOM or in INVENTORY!~
     
-    auto it = gameItems.find(object);
-        if (it != gameItems.end()) {
-            it->second.look(player, room);
-            cout << "Yes, this item exists in the game" << endl;
-            }
-        if(player.currentRoom->hasItem(object)){
-            cout << "The item is also in this room" << endl;
-            }
-        else{
-            cout << "The item is NOT in this GAME!" << endl;
-            }
-        }
     
     
         
-        
-        
-        // if(object == "ROOM" ) {
-        //     cout << player.currentRoom->lookRoom() << endl;
-        //     cout << endl;
-        //     // Separated the Room inventory from the Look Table
-        //     /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
-        //     room.listRoomInventory();
-        //     cout << endl; */
-        //     }
+        if(object == "ROOM" ) {
+            cout << player.currentRoom->lookRoom() << endl;
+            cout << endl;
+            // Separated the Room inventory from the Look Table
+            /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
+            room.listRoomInventory();
+            cout << endl; */
+            }
         // if(object == "TABLE"){
         //     if(player.currentRoom->hasItem("TABLE")){
         //         cout << "YOU SEE THE FOLLOWING ITEMS ON THE TABLE:" << endl;
         //         player.currentRoom->listRoomInventory();
         //         cout << endl;
-        //         }
-        //     else { 
-        //         cout << "THERE IS NO TABLE IN THIS ROOM" << endl;
-        //         cout << endl;
-        //         }
+                // }
+        else {
+            auto it = gameItems.find(object);
+            if (it != gameItems.end()) {
+                it->second.look(player, room);
+                cout << "Yes, this item exists in the game" << endl;
+                }
+            if(player.currentRoom->hasItem(object)){
+                cout << "The item is also in this room" << endl;
+                }
+            else{
+                cout << "The item is NOT in this GAME!" << endl;
+                }
+            } 
+            
         // }
+        }
         // if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
         //         // Show items in the inventory... 
         //         player.lookInventory();
