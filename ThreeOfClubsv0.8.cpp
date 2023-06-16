@@ -359,7 +359,8 @@ unordered_map<string, Item> gameItems={
         {"ROPE", Item("ROPE", 2, "a length of cord about 15 long. Looks weak", true, false)},
         {"KEYS", Item("KEYS", 1, "Set of car keys, a house key and a Mysterious key", true, true)},
         {"FLAMINGO", Item("FLAMINGO", 1, "Its a pink flamingo.\nApparently used to hit small round objects", true, true)},
-        {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)}
+        {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)},
+        {"CAT", Item("CAT", 1, "A cat of English-origin sporting a feindish grin.", true, true)}
         };
 
 // ACTION Class declaration
@@ -970,6 +971,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
         rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
         rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
+        rooms[8].addRoomItem("CAT", gameItems["CAT"]);
+        
 
         // Create the player to the first room after rooms initialization
        Arisu = Player(&rooms[12],true);
@@ -1004,6 +1007,10 @@ class Game //Purpose of the class is construct/initialize the various elements i
             cout << "[QUEEN OF HEARTS]: THE OBJECTIVE OF THIS GAME IS TO MOVE BETWEEN ROOMS TO THE END" << endl;
             cout << "[QUEEN OF HEARTS]: THINKING TOO LONG ABOUT YOUR DECISIONS WILL HAVE A NEGATIVE IMPACT ON YOUR HEALTH" << endl;
             cout << "---------------------------------------------------------" << endl;
+            cout << "GAME PLAY NOTES: " << endl;
+            cout << "-- YOU WILL ENTER A SERIES OF ROOMS. YOU HAVE LIMITED TIME TO MOVE TO THE NEXT ROOM" << endl;
+            cout << "-- ONCE YOU PASS THROUGH A ROOM, YOU CANNOT RETURN" << endl;
+            cout << "-- BASIC COMMANDS ARE: 'GO', 'TAKE', 'DROP', 'LOOK', 'QUIT'" << endl;
             cout << endl;
             string roomDescription = Arisu.currentRoom->getDescription();
             if (!roomDescription.empty())
@@ -1055,8 +1062,13 @@ class Game //Purpose of the class is construct/initialize the various elements i
                     //DEBUG: cout << "finish processing input\n";
                     }
                 else{
-                    cout << "Please enter a valid command.\nIt needs to be at least 2 words.";
-                    }
+                    if (commandVector[0] == "HELP"){
+                        cout << "HELP? REALLY?\nYOU WENT DOWN THE RABBIT HOLE.\nYOU ARE ON YOUR OWN!!" << endl;
+                        }
+                        else{
+                        cout << "Please enter a valid command.\nIt needs to be at least 2 words.";
+                        }
+                }
 
                 
                 //DEBUG:: cout << "print room description\n";
@@ -1106,6 +1118,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
         rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
         rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
+        rooms[8].addRoomItem("CAT", gameItems["CAT"]);
         }
 };
 
