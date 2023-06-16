@@ -35,8 +35,10 @@ TEST PLAN
     1. Compile and run the program
     2. Enter the commands as prompted.
     3. commandVector is case insensitive
+    3.1 Subject (first word) of commandVector can be any of ~90 words
     4. Room timer is different for each room
     5. Player has an ivnentory and can pick up items/drop items
+    5.1 Player has a MAX inventory of 5 items.
     6. Each Room has an ivnentory and it will be included when player "looks" at the room
     7. Player can move between rooms (but not backwards)
     8. Player can look at items to get a description
@@ -127,14 +129,11 @@ public:
         inventoryItems_.clear();
         }
     
-    void addItem(const Item& item) 
-        {
-        if (inventoryItems_.size() < 5) 
-            {
+    void addItem(const Item& item) {
+        if (inventoryItems_.size() < 5) {
             inventoryItems_[item.getName()] = item;
             } 
-        else 
-            {
+        else{
             cout << "You have maxed your inventory" << endl;
             }
         }
@@ -166,10 +165,8 @@ public:
         return itemCount;
         }
   
-    const Item& operator[](int i) const 
-        {
-        if (i < 0 || i >= inventoryItems_.size()) 
-            {
+    const Item& operator[](int i) const{
+        if (i < 0 || i >= inventoryItems_.size()){
             throw std::out_of_range("Invalid index");
             }
     
@@ -177,8 +174,7 @@ public:
         advance(iter, i);
         return iter->second;
         }
-    void listInventory() 
-        {
+    void listInventory() {
         cout << "The inventory contains the following items: "<< endl;
             for (const auto& pair : inventoryItems_) 
             {
@@ -376,7 +372,9 @@ unordered_map<string, Item> gameItems={
         {"KEYS", Item("KEYS", 1, "Set of car keys, a house key and a Mysterious key", true, true)},
         {"FLAMINGO", Item("FLAMINGO", 1, "Its a pink flamingo.\nApparently used to hit small round objects", true, true)},
         {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)},
-        {"CAT", Item("CAT", 1, "A cat of English-origin sporting a feindish grin.", true, true)}
+        {"CAT", Item("CAT", 1, "A cat of English-origin sporting a feindish grin.", true, true)},
+        {"TEACUP", Item("TEACUP", 1, "A broken teacup. Likely the result of a slammin' tea party.", true, true)},
+        {"TEAPOT", Item("TEAPOT", 1, "An equisitely ornate teapot. One wonders why it remains in such good shape.", true, true)}
         };
 
 // ACTION Class declaration
@@ -517,7 +515,7 @@ class openAction: public Action{
     openAction (){}
     void execute_action(Player& player, Room& room, string object) override {
         cout << "You called the 'OPEN' Action"<< endl;
-        cout << "Simply 'move' through the door"<< endl;
+        cout << "Simply 'move' through the door if you are attempting to open a door"<< endl;
         cout << "'OPEN' actions will come in a future release"<< endl;
         }
     };   
@@ -1030,6 +1028,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
         rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
         rooms[8].addRoomItem("CAT", gameItems["CAT"]);
+        rooms[3].addRoomItem("TEACUP", gameItems["TEACUP"]);
+        rooms[3].addRoomItem("TEAPOT", gameItems["TEAPOT"]);
         
 
         // Create the player to the first room after rooms initialization
@@ -1048,8 +1048,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
     // CRITICAL FUNCTION for Game - check the remaining time in the current room.
     void checkRemainingTimer(){
         // This IF function prevents the room timer from killing Arisu in the first room!!
-        if (!Arisu.currentRoom->getRoomTimer()==200)
-        {
+        //if (!Arisu.currentRoom->getRoomTimer()==200)
+        //{
         // Once Arisu moves into a room, the timer starts counting down.
         if(Arisu.currentRoom->getRemainingTimeInRoom() <= 0) {
             Arisu.setAliveState(false);
@@ -1058,7 +1058,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
             std::cout << "A LASER HAS JUST PASSED THROUGH YOUR SKULL.\nYOU ARE DEAD."<< endl;
             return ;
             }   
-        }
+        //}
     }
 
     
@@ -1119,7 +1119,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 }
 
                 string roomDescription = Arisu.currentRoom->getDescription();
-                cout << "print elevator description\n";
+                // DEBUG cout << "print post-elevator description\n";
                 if (!roomDescription.empty()){
                     //DEBUG:: cout << "room\n";
                     cout << roomDescription << endl;
@@ -1157,7 +1157,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         
         // Reset room inventory --- future work to make this more scalable/consolidated.
         rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
-        rooms[0].addRoomItem("TIMER", gameItems["TIMER"]);
+        rooms[0].addRoomItem("WATCH", gameItems["WATCH"]);
         rooms[0].addRoomItem("MATCH", gameItems["MATCH"]);
         rooms[2].addRoomItem("PAPER", gameItems["PAPER"]);
         rooms[0].addRoomItem("BOOK", gameItems["BOOK"]);
@@ -1166,10 +1166,13 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
         rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
         rooms[8].addRoomItem("CAT", gameItems["CAT"]);
+        rooms[3].addRoomItem("TEACUP", gameItems["TEACUP"]);
+        rooms[3].addRoomItem("TEAPOT", gameItems["TEAPOT"]);
         }
 };
 
 int main(){
+    std::cout << "\033c"; //Clear the screen
     char playAgain = 'y';
     int gameAttempts_ = 0;
     Game game;

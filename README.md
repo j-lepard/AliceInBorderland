@@ -12,6 +12,11 @@
 - room timers
 - game loop and attempt counter
 
+## Known Bug: 
+- In initial room, only acceptable action is to 'go straight'
+- player dies if any other action attempted. 
+- Reason: room timer (chrono) will be 0 because player did not enter the room.
+
 ## Thing you cannot do yet: 
 - other actions - like open/use/
 - interact with other characters (ie talk)
