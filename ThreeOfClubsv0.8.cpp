@@ -50,6 +50,7 @@
 // These are for the stopwatch and room timers
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 using namespace std;
 
@@ -914,6 +915,51 @@ class Control {
     }
 };
 
+// TEXT FILE READER Class Declaration: 
+
+class TextFileReader{
+    private:  
+    string txtString [100]; 
+    string contents_;
+    
+    public:
+    
+    // Default constructor
+    TextFileReader (){};
+    
+    // Paramenter Contructor
+    TextFileReader (string fileName)
+        {
+        fstream gameFile_;
+        string Line_;
+        int i = 0;
+        while (true)
+            {     
+            //Open file. If file cant be opened  loop until correct name entered
+            gameFile_.open(fileName, ios::in);         
+            if (!gameFile_.is_open()){
+                cout << "There was a problem opening the file. Please confirm spelling" << endl;
+                }
+            else
+                break;  
+            }
+
+         // Now file is success opened, take name of file and put each line into array of string (up to 100)
+        while (getline(gameFile_, Line_) && i<10){
+            txtString[i]=Line_;
+            i++;
+            }   
+        }
+    // Display method to present the string at each index within the txtString array.    
+    void display(){
+        for(int i = 0; i < 10; i++){
+            cout << txtString[i] << endl;
+            cout << endl;
+            }
+        }
+    };
+
+
 // GAME Class declaration
 class Game //Purpose of the class is construct/initialize the various elements in the game. The rooms, doors, objects, and the player. 
 {
@@ -1000,18 +1046,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
     
     // This function is the main game loop. It is called from main() and runs until the player dies or wins.
     void gameLoop() {
-            cout << endl;
-            cout << "'ALICE IN BORDERLANDS' - A TEXT SURVIVAL GAME" << endl;
-            cout << "---------------------------------------------------------" << endl;
-            cout << "[QUEEN OF HEARTS]: YOU HAVE JUST ENTERED THE GAME: " << endl;
-            cout << "[QUEEN OF HEARTS]: THE OBJECTIVE OF THIS GAME IS TO MOVE BETWEEN ROOMS TO THE END" << endl;
-            cout << "[QUEEN OF HEARTS]: THINKING TOO LONG ABOUT YOUR DECISIONS WILL HAVE A NEGATIVE IMPACT ON YOUR HEALTH" << endl;
-            cout << "---------------------------------------------------------" << endl;
-            cout << "GAME PLAY NOTES: " << endl;
-            cout << "-- YOU WILL ENTER A SERIES OF ROOMS. YOU HAVE LIMITED TIME TO MOVE TO THE NEXT ROOM" << endl;
-            cout << "-- ONCE YOU PASS THROUGH A ROOM, YOU CANNOT RETURN" << endl;
-            cout << "-- BASIC COMMANDS ARE: 'GO', 'TAKE', 'DROP', 'LOOK', 'QUIT'" << endl;
-            cout << endl;
+
+        
             string roomDescription = Arisu.currentRoom->getDescription();
             if (!roomDescription.empty())
             {
@@ -1024,6 +1060,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
             
 
             while(true) {
+
                 string string_;
                 //DEBUG:: cout << "confirmed enter commandVector\n";
                 std::getline(cin, string_);
@@ -1045,9 +1082,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                     /* for (const string &word : commandVector)
                         cout << word << ' ' << endl;
                         cout << endl; */
-
-                
-                
+            
                 // CLS - Clear the screen before printing the next room description
                 std::cout << "\033c"; //Clear the screen
                 
@@ -1127,6 +1162,8 @@ int main()
     char playAgain = 'y';
     int gameAttempts_ = 0;
     Game game;
+    TextFileReader gameIntro("gameIntro.txt");
+    gameIntro.display();
     while (playAgain == 'y' || playAgain == 'Y'){
         game.gameLoop();
         
