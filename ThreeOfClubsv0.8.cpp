@@ -27,14 +27,30 @@
     Player
     Control
     Action
+    FileReader
     Game
 
 */
 
 /* TEST PLAN
-    1. 
-    2. 
-    3.  
+    1. Compile and run the program
+    2. Enter the commands as prompted.
+    3. commandVector is case insensitive
+    4. Room timer is different for each room
+    5. Player has an ivnentory and can pick up items/drop items
+    6. Each Room has an ivnentory and it will be included when player "looks" at the room
+    7. Player can move between rooms (but not backwards)
+    8. Player can look at items to get a description
+    9. Objects (items) in the commandVector are validated if they are in the game and player inventory.
+    10. Queen of Hearts announces the RoomTimer upon entry. 
+    11. Player can look at WATCH to see remaining room time. 
+    12. Player MUST have the WATCH in inventory to see the remaining room time.
+    13. Player will die immediately if they enter particular rooms
+    14. Player will die if they run out of time in the current room. 
+    15. Player can restart the game or quit upon their death. 
+    16. Game reset will include the player inventory and the room inventories, player location and room timers.
+    17. Player can call "help" menu at any time.(just try it...)
+    18. At exit, the player is provided with a count of their attempts. 
   
 */
 
@@ -982,8 +998,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[8]= Room("YOU ENTERED A ROOM THAT LOOKS EXACTLY THE SAME AS ALL PREVIOUS.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,45);
         rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
         rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
-        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200);
-        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200);
+        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200); //Room Timer of 200 prevents the player from dying in this room.
+        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200);//Room Timer of 200 prevents the player from dying in this room
        
        // Assign the Doors to each of the rooms below Arguments to addDoor are the direction and pointer to the new room.
        rooms[0].addDoor("RIGHT", &rooms[5]); //You die if you go this way 
@@ -1003,8 +1019,6 @@ class Game //Purpose of the class is construct/initialize the various elements i
        rooms[12].addDoor("STRAIGHT", &rooms[0]); //START
     
         // Create the ITEMS of the game.
-        
-        
         //Add the Game Items to their starting locations in Room Inventory:
         //need to pass addItem both the name of the item and the actual Item object as it is an unordered_map
         rooms[0].addRoomItem("PHONE", gameItems["PHONE"]);
@@ -1026,21 +1040,22 @@ class Game //Purpose of the class is construct/initialize the various elements i
     string getCurrentRoomDescription(){
         return Arisu.currentRoom->getDescription();
         }
+    
     // Function makes Arise living status available in the gameLoop
     bool ArisuAlive(){
             return Arisu.getAliveState();
         }
     
-    // Critical function for Game - check the remaining time in the current room.
+    // CRITICAL FUNCTION for Game - check the remaining time in the current room.
     void checkRemainingTimer(){
-        // This function prevents the room timer from killing Arisu in the first room!!
+        // This IF function prevents the room timer from killing Arisu in the first room!!
         if (!Arisu.currentRoom->getRoomTimer()==200)
         {
         // Once Arisu moves into a room, the timer starts counting down.
         if(Arisu.currentRoom->getRemainingTimeInRoom() <= 0) {
             Arisu.setAliveState(false);
             std::cout << "A SOFT WHIRRING SOUND STARTS TO EMINATE FROM ABOVE.\nYOU LOOK UP AND THE LAST THING YOU SEE IS A BRILLIANT FLASH OF LIGHT"<< endl;
-            std::this_thread::sleep_for(std::chrono::seconds(3));
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             std::cout << "A LASER HAS JUST PASSED THROUGH YOUR SKULL.\nYOU ARE DEAD."<< endl;
             return ;
             }   
@@ -1050,8 +1065,6 @@ class Game //Purpose of the class is construct/initialize the various elements i
     
     // This function is the main game loop. It is called from main() and runs until the player dies or wins.
     void gameLoop() {
-
-        
             string roomDescription = Arisu.currentRoom->getDescription();
             if (!roomDescription.empty()){
                 cout << roomDescription << endl;
@@ -1061,13 +1074,10 @@ class Game //Purpose of the class is construct/initialize the various elements i
             cout << endl;
             cout << "WHAT DO YOU WANT TO DO?\n*WARNING:* Do not take too long to decide.. "<< endl;
             
-
-            while(true) {
-
+             while(true) {
                 string string_;
                 //DEBUG:: cout << "confirmed enter commandVector\n";
-                std::getline(cin, string_);
-                
+                std::getline(cin, string_); 
                 std::string word_;
                 std::vector<string> commandVector;
                 int length = string_.length(); //This gives the total phrase length
@@ -1109,8 +1119,6 @@ class Game //Purpose of the class is construct/initialize the various elements i
                         }
                 }
 
-                
-                
                 string roomDescription = Arisu.currentRoom->getDescription();
                 cout << "print elevator description\n";
                 if (!roomDescription.empty()){
