@@ -2,7 +2,7 @@
  a very simple text game - thats not completed. 
 
 ## Installation
-- Windows only
+- Windows only (sorry!)
 - compile with mingw or alternative
 - run the compiled (.exe) in Terminal.
 
@@ -10,7 +10,7 @@
 - move from room to room
 - take/drop items
 - room timers
-- game loop
+- game loop and attempt counter
 
 ## Thing you cannot do yet: 
 - other actions - like open/use/
