@@ -84,12 +84,12 @@ class Item
         {
         return name_;
         }
-    string getItemDescription() const 
-        {
-        return description_;
-        }
+    // string getItemDescription() const 
+    //     {
+    //     return description_;
+    //     }
     // Added - poss duplicat of getItemDescription
-    void look(Player& player, Room& room) {
+    void getItemDescription(Player& player, Room& room) {
         // Perform the look behavior for this item
         std::cout << description_ << std::endl;
         // Additional logic specific to the item's behavior
@@ -439,59 +439,43 @@ class lookAction: public Action{
     
     // Item Description function. 
     // SHOULD BE constrained to items in the CURRENT ROOM or in INVENTORY!~
-    
-    
-    
-        
+        if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
+                    // Show items in the inventory... 
+                    player.lookInventory();
+                    cout << endl;
+        }
+        if(object == "WATCH"){
+            if(player.hasItem("WATCH")){
+                cout << "THERE ARE: " << player.currentRoom->getRemainingTimeInRoom()  << " SECONDS REMAINING ON THE TIMER"<< endl;
+                cout << endl;
+                }
+        }   
         if(object == "ROOM" ) {
             cout << player.currentRoom->lookRoom() << endl;
             cout << endl;
-            // Separated the Room inventory from the Look Table
-            /* cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
+            //Separated the Room inventory from the Look Table
+            cout << "YOU SEE THE FOLLOWING ITEMS IN THE ROOM:" << endl;
             room.listRoomInventory();
-            cout << endl; */
-            }
-        // if(object == "TABLE"){
-        //     if(player.currentRoom->hasItem("TABLE")){
-        //         cout << "YOU SEE THE FOLLOWING ITEMS ON THE TABLE:" << endl;
-        //         player.currentRoom->listRoomInventory();
-        //         cout << endl;
-                // }
+            cout << endl; 
+        }
         else {
             auto it = gameItems.find(object);
             if (it != gameItems.end()) {
-                it->second.look(player, room);
-                cout << "Yes, this item exists in the game" << endl;
+                it->second.getItemDescription(player, room);
+                //DEBUG: cout << "Yes, this item exists in the game" << endl;
+
+                if (player.currentRoom->hasItem(object)) {
+                //DEBUG:    cout << "The item is also in this room" << endl;
                 }
-            if(player.currentRoom->hasItem(object)){
-                cout << "The item is also in this room" << endl;
+                else {
+                //DEBUG:    cout << "The item is NOT in this room" << endl;
                 }
-            else{
-                cout << "The item is NOT in this GAME!" << endl;
                 }
-            } 
-            
-        // }
-        }
-        // if(object == "INVENTORY" || object == "BAG" || object == "POCKET" ) {
-        //         // Show items in the inventory... 
-        //         player.lookInventory();
-        //         cout << endl;
-        //         }
-        // if(object == "TIMER"){
-        //     if(player.hasItem("TIMER")){
-        //         cout << "THERE ARE: " << player.currentRoom->getRemainingTimeInRoom()  << " SECONDS REMAINING ON THE TIMER"<< endl;
-        //         cout << endl;
-        //         }
-        //     else { 
-        //         cout << "YOU DO NOT HAVE A TIMER IN YOUR INVENTORY" << endl;
-        //         cout << endl;
-        //         }
-        //     }
-        // else
-        //     cout << "You entered an item the doesnt yet have a corresponding \"Action\" " << endl;
-        // } 
-        
+                else {
+                    cout << "THERE IS NO ITEM WITH THAT NAME IN THE GAME" << endl;
+                }
+        }    
+    }
 };
 
 class useAction: public Action{
@@ -508,6 +492,7 @@ class talkAction: public Action{
     talkAction (){}
     void execute_action(Player& player, Room& room, string object) override{
         cout << "you called the TALK Action"<< endl;
+        cout << "'TALK' actions will come in a future release"<< endl;
         }
     };
 class openAction: public Action{
@@ -515,7 +500,9 @@ class openAction: public Action{
     public: 
     openAction (){}
     void execute_action(Player& player, Room& room, string object) override {
-        cout << "you called the OPEN Action"<< endl;
+        cout << "You called the 'OPEN' Action"<< endl;
+        cout << "Simply 'move' through the door"<< endl;
+        cout << "'OPEN' actions will come in a future release"<< endl;
         }
     };   
 
@@ -1054,7 +1041,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                     // Also intro a ternary operator "? with a : "
                 
                 // CLS - Clear the screen before printing the next room description
-                //std::cout << "\033c"; //Clear the screen
+                std::cout << "\033c"; //Clear the screen
                 if (commandVector.size() >= 2){
                     string verb = commandVector[0];
                     string object = commandVector[1];
