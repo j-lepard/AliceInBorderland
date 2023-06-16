@@ -186,7 +186,7 @@ class Room
     string description_;
     bool explored_ = false; //false=NO, true=cleared, 
     bool isLight_ ; //when entering the room is it lit? 
-    int roomTimer_ = 15; // the amount of time the player is provided in the room before death. 
+    int roomTimer_= 45; // the amount of time the player is provided in the room before death. 
     bool timerRunning = false;
     std::chrono::system_clock::time_point startTime;
 
@@ -266,7 +266,7 @@ class Room
         }
     
     void listRoomInventory() {
-        cout << "The room contains the following items: "<< endl;
+        //DEBUG cout << "The room contains the following items: "<< endl;
             for (const auto& pair : roomItems_){
             cout << pair.first << endl;
             }
@@ -954,9 +954,8 @@ class TextFileReader{
     void display(){
         for(int i = 0; i < 10; i++){
             cout << txtString[i] << endl;
-            cout << endl;
             }
-        }
+        cout << endl;}
     };
 
 
@@ -983,7 +982,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[8]= Room("YOU ENTERED A ROOM THAT LOOKS EXACTLY THE SAME AS ALL PREVIOUS.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,45);
         rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
         rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
-        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,20000);
+        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200);
         rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200);
        
        // Assign the Doors to each of the rooms below Arguments to addDoor are the direction and pointer to the new room.
@@ -1034,14 +1033,19 @@ class Game //Purpose of the class is construct/initialize the various elements i
     
     // Critical function for Game - check the remaining time in the current room.
     void checkRemainingTimer(){
+        // This function prevents the room timer from killing Arisu in the first room!!
+        if (!Arisu.currentRoom->getRoomTimer()==200)
+        {
+        // Once Arisu moves into a room, the timer starts counting down.
         if(Arisu.currentRoom->getRemainingTimeInRoom() <= 0) {
             Arisu.setAliveState(false);
             std::cout << "A SOFT WHIRRING SOUND STARTS TO EMINATE FROM ABOVE.\nYOU LOOK UP AND THE LAST THING YOU SEE IS A BRILLIANT FLASH OF LIGHT"<< endl;
             std::this_thread::sleep_for(std::chrono::seconds(3));
             std::cout << "A LASER HAS JUST PASSED THROUGH YOUR SKULL.\nYOU ARE DEAD."<< endl;
             return ;
-            }
+            }   
         }
+    }
 
     
     // This function is the main game loop. It is called from main() and runs until the player dies or wins.
@@ -1049,8 +1053,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
 
         
             string roomDescription = Arisu.currentRoom->getDescription();
-            if (!roomDescription.empty())
-            {
+            if (!roomDescription.empty()){
                 cout << roomDescription << endl;
             }
             
@@ -1099,6 +1102,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 else{
                     if (commandVector[0] == "HELP"){
                         cout << "HELP? REALLY?\nYOU WENT DOWN THE RABBIT HOLE.\nYOU ARE ON YOUR OWN!!" << endl;
+                        cout << endl;
                         }
                         else{
                         cout << "Please enter a valid command.\nIt needs to be at least 2 words.";
@@ -1106,8 +1110,9 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 }
 
                 
-                //DEBUG:: cout << "print room description\n";
+                
                 string roomDescription = Arisu.currentRoom->getDescription();
+                cout << "print elevator description\n";
                 if (!roomDescription.empty()){
                     //DEBUG:: cout << "room\n";
                     cout << roomDescription << endl;
@@ -1122,7 +1127,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
                     }
                 else {// Get input from the user
                     cout << endl;
-                    cout << "WHAT DO YOU WANT TO DO?"<< endl; 
+                    cout << "-> WHAT DO YOU WANT TO DO?"<< endl; 
                     //std::cout << "\033c"; //Clear the screen
                     }                                       
             }
@@ -1157,16 +1162,19 @@ class Game //Purpose of the class is construct/initialize the various elements i
         }
 };
 
-int main()
-{
+int main(){
     char playAgain = 'y';
     int gameAttempts_ = 0;
     Game game;
+    //Import the game intro text:
     TextFileReader gameIntro("gameIntro.txt");
     gameIntro.display();
+    
+    //The play again loop - runs until the player dies or wins.
     while (playAgain == 'y' || playAgain == 'Y'){
         game.gameLoop();
         
+        // Player death loop and game reset:
         cout << "[QUEEN OF HEARTS]: YOU FAILED! WISH TO TRY AGAIN??" << endl;
         cin >> playAgain;
         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
