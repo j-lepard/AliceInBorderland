@@ -10,8 +10,8 @@
  Copyright: 2023 Jamie Lepard
 */
 
-/*
- DOCUMENTATION
+
+/*  DOCUMENTATION
  
  Program Purpose:
  	A game that attempts to recreate the Three of Clubs puzzle from the Netflix program "Aice in Borderland"
@@ -30,9 +30,8 @@
     FileReader
     Game
 
-*/
 
-/* TEST PLAN
+TEST PLAN
     1. Compile and run the program
     2. Enter the commands as prompted.
     3. commandVector is case insensitive
@@ -52,9 +51,8 @@
     17. Player can call "help" menu at any time.(just try it...)
     18. At exit, the player is provided with a count of their attempts. 
     19. Supporting Text files are opened and can be amended to change the game.
-  
-*/
-
+    20. The game is not perfect, but it is a good start. And its taken me a LOOOONG time and much suffering (but still rewarding)
+ */
 
 #include <array>
 #include <string>
