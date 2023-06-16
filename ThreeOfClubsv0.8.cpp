@@ -60,7 +60,7 @@ class Room;
 
 
 
-// Class declaration
+// ITEM Class declaration
 class Item
     { 
     private:
@@ -84,11 +84,7 @@ class Item
         {
         return name_;
         }
-    // string getItemDescription() const 
-    //     {
-    //     return description_;
-    //     }
-    // Added - poss duplicat of getItemDescription
+
     void getItemDescription(Player& player, Room& room) {
         // Perform the look behavior for this item
         std::cout << description_ << std::endl;
@@ -96,7 +92,7 @@ class Item
     }
 };
 
-// Class declaration
+// INVENTORY Class declaration
 class Inventory
     {
     private:
@@ -181,6 +177,7 @@ public:
         }
 };
 
+// ROOM Class declaration
 class Room 
     {
     private: 
@@ -301,6 +298,7 @@ class Room
         }
     };
 
+// PLAYER Class declation
 class Player {
     private: 
     bool isAlive = true; //you start the game in an Alive=true state. Will use this parameter for a "wile is alive..."
@@ -350,6 +348,7 @@ class Player {
         }
     };
 
+// GLOBAL gameItems map -probably poor form :()
 unordered_map<string, Item> gameItems={
         {"PHONE", Item("PHONE", 1, "A basic smartphone.", true, false)},
         {"BOOK", Item("BOOK", 2, "An old and dusty book.", true, false)},
@@ -363,6 +362,7 @@ unordered_map<string, Item> gameItems={
         {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)}
         };
 
+// ACTION Class declaration
 class Action {
     public: 
     // This is our PURE VIRTUAL VOID function - there is no default
@@ -477,7 +477,6 @@ class lookAction: public Action{
         }    
     }
 };
-
 class useAction: public Action{
     private:
     public: 
@@ -506,6 +505,7 @@ class openAction: public Action{
         }
     };   
 
+// CONTROL Class declaration
 class Control {
     private:
     map<string, Action*> verbMapping;
@@ -913,6 +913,7 @@ class Control {
     }
 };
 
+// GAME Class declaration
 class Game //Purpose of the class is construct/initialize the various elements in the game. The rooms, doors, objects, and the player. 
 {
     private:
@@ -982,6 +983,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
             return Arisu.getAliveState();
         }
     
+    // Critical function for Game - check the remaining time in the current room.
     void checkRemainingTimer(){
         if(Arisu.currentRoom->getRemainingTimeInRoom() <= 0) {
             Arisu.setAliveState(false);
@@ -1037,11 +1039,13 @@ class Game //Purpose of the class is construct/initialize the various elements i
                         cout << word << ' ' << endl;
                         cout << endl; */
 
-                    // CHECK INPUT IS OK LENGTH - IF checks to make sure that the command is sufficient length
-                    // Also intro a ternary operator "? with a : "
+                
                 
                 // CLS - Clear the screen before printing the next room description
                 std::cout << "\033c"; //Clear the screen
+                
+                // CHECK INPUT IS OK LENGTH - IF checks to make sure that the command is sufficient length
+                // Also intro a ternary operator "? with a : "
                 if (commandVector.size() >= 2){
                     string verb = commandVector[0];
                     string object = commandVector[1];
@@ -1077,7 +1081,6 @@ class Game //Purpose of the class is construct/initialize the various elements i
             }
         }
     // GAME RESET FUNCTION ----- 
-        
     void resetGame()
         {
         // Player is reset to starting position and Alive.
@@ -1124,7 +1127,7 @@ int main()
         } 
      }
 
-//    cout << "Your score was: " << gameAttempts_ << endl;
+    // cout << "Your score was: " << gameAttempts_ << endl;
     cout << "Thank you for playing. You attempted the game: "<< gameAttempts_ << " times." << endl;
     cout << "Imagine if you had only 1 chance..." << endl;
     cout << "Good bye!" << endl;
