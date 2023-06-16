@@ -51,6 +51,7 @@
     16. Game reset will include the player inventory and the room inventories, player location and room timers.
     17. Player can call "help" menu at any time.(just try it...)
     18. At exit, the player is provided with a count of their attempts. 
+    19. Supporting Text files are opened and can be amended to change the game.
   
 */
 
