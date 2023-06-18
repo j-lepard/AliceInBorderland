@@ -986,7 +986,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         // Define the game board, 9 rooms, 2 to outside, 1 to win and 1 more as the 'ante room'.
         rooms[0]= Room("YOU IN A DULL ROOM, WITH NO WINDOWS.\nTHERE IS A SMALL TABLE.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", TO THE RIGHT SAYS \"DRINK ME\"", &Arisu,120);
         rooms[1]= Room("YOU ENTERED THE NEXT ROOM\nYOU SEE A PERSON IN THE ROOM.\nTO YOUR RIGHT IS A DOOR THAT READS \"EAT ME\". STRAIGHT AHEAD THE DOOR READS \"DRINK ME\" ", &Arisu,55);
-        rooms[2]= Room("YOU ESCAPED THE PREVIOUS ROOM\n FEW HAVE MADE IT EVEN THIS FAR.\nTHE ROOM IS TOTALLY DARK!!", &Arisu,60);
+        rooms[2]= Room("YOU ESCAPED THE PREVIOUS ROOM\n FEW HAVE MADE IT EVEN THIS FAR.\nTO YOUR RIGHT THERE IS A DOOR THAT READS \"EAT ME\" AND ON YOUR LEFT, A DOOR THAT READS \"DRINK ME\"", &Arisu,60);
         rooms[3]= Room("YOU ENTERED THE FOURTH ROOM. THERE ARE TWO DOORS. THE DOOR TO THE RIGHT SAYS \"EAT ME\", THE DOOR AHEAD SAYS \"DRINK ME\"", &Arisu,55);
         rooms[4]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
         rooms[5]= Room("YOU ENTERED THE ROOM....", &Arisu,0);
