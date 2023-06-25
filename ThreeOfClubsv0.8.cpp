@@ -477,6 +477,10 @@ class lookAction: public Action{
             room.listRoomInventory();
             cout << endl; 
         }
+        if(object == "DOOR" ) {
+            cout << player.currentRoom->lookRoom() << endl;
+            cout << endl; 
+        }
         else {
             auto it = gameItems.find(object);
             if (it != gameItems.end()) {
@@ -962,14 +966,14 @@ class TextFileReader{
             }
 
          // Now file is success opened, take name of file and put each line into array of string (up to 100)
-        while (getline(gameFile_, Line_) && i<10){
+        while (getline(gameFile_, Line_) && i<12){
             txtString[i]=Line_;
             i++;
             }   
         }
     // Display method to present the string at each index within the txtString array.    
     void display(){
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 12; i++){
             cout << txtString[i] << endl;
             }
         cout << endl;}
