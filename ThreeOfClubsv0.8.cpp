@@ -30,6 +30,12 @@
     FileReader
     Game
 
+Important Functions: 
+    Game.checkRemainingTimer() 
+        - checks the room timer and returns the remaining time if <0, then sets the player to dead. 
+        - Implemented several times through the input loop due to the need to check the timer after each command because clock is ticking while player is thinking.
+        - Is the meachanism by which the gameloop() breaks and the player is sent to the death screen and play again.
+    
 
 TEST PLAN
     1. Compile and run the program
@@ -54,6 +60,9 @@ TEST PLAN
     18. At exit, the player is provided with a count of their attempts. 
     19. Supporting Text files are opened and can be amended to change the game.
     20. The game is not perfect, but it is a good start. And its taken me a LOOOONG time and much suffering (but still rewarding)
+
+ BUG List: 
+  - FIXED:: you can look 'item' when you are in a different room and it will still give you the description. (that said you cannot take it!)   
  */
 
 #include <array>
@@ -372,19 +381,19 @@ class Player {
 
 // GLOBAL gameItems map -probably poor form :()
 unordered_map<string, Item> gameItems={
-        {"PHONE", Item("PHONE", 1, "A basic smartphone.", true, false)},
-        {"BOOK", Item("BOOK", 2, "An old and dusty book.", true, false)},
-        {"WATCH", Item("WATCH", 1, "A small pocketwatch. Mysterious as it has no obvious buttons", true, false)},
-        {"TABLE", Item("TABLE", 200, "A small plain table", false, false)},
-        {"MATCH", Item("MATCH", 1, "A book of matches", true, true)},
-        {"PAPER", Item("PAPER", 2, "A stack of approximately 20 sheets of paper", true, false)},
-        {"ROPE", Item("ROPE", 2, "a length of cord about 15 long. Looks weak", true, false)},
-        {"KEYS", Item("KEYS", 1, "Set of car keys, a house key and a Mysterious key", true, true)},
-        {"FLAMINGO", Item("FLAMINGO", 1, "Its a pink flamingo.\nApparently used to hit small round objects", true, true)},
-        {"HATTER", Item("HATTER", 1, "A Strange person who keeps moving around the room, making short, personal remarks, asking unanswerable riddles.", true, true)},
-        {"CAT", Item("CAT", 1, "A cat of English-origin sporting a feindish grin.", true, true)},
-        {"TEACUP", Item("TEACUP", 1, "A broken teacup. Likely the result of a slammin' tea party.", true, true)},
-        {"TEAPOT", Item("TEAPOT", 1, "An equisitely ornate teapot. One wonders why it remains in such good shape.", true, true)}
+        {"PHONE", Item("PHONE", 1, "A BASIC SMARTPHONE.", true, false)},
+        {"BOOK", Item("BOOK", 2, "AN OLD, DUSTY BOOK WITH SOME ILLUSTRATIONS.", true, false)},
+        {"WATCH", Item("WATCH", 1, "A SMALL POCKETWATCH. MYSTERIOUS AND IMPORTANT LOOKING.", true, false)},
+        {"TABLE", Item("TABLE", 200, "A SMALL PLAIN TABLE UPON WHICH THERE ARE A COLLECTION OF ITEMS", false, false)},
+        {"MATCH", Item("MATCH", 1, "A BOOK OF MATCHES", true, true)},
+        {"PAPER", Item("PAPER", 2, "A STACK OF APPROXIMATELY 20 SHEETS OF PAPER", true, false)},
+        {"ROPE", Item("ROPE", 2, "A LENGTH OF CORDAGE BOUT 15FT LONG. LOOKS PRETTY WEAK.", true, false)},
+        {"KEYS", Item("KEYS", 1, "SET OF CAR KEYS, A HOUSE KEY AND A MYSTERIOUS KEY", true, true)},
+        {"FLAMINGO", Item("FLAMINGO", 1, "TS A PINK FLAMINGO.\nAPPARENTLY USED TO HIT SMALL ROUND OBJECTS", true, true)},
+        {"HATTER", Item("HATTER", 1, "A STRANGE PERSON WHO KEEPS MOVING AROUND THE ROOM\n, MAKING SHORT, PERSONAL REMARKS, ASKING UNANSWERABLE RIDDLES.", true, true)},
+        {"CAT", Item("CAT", 1, "A CAT OF ENGLISH-ORIGIN SPORTING A FEINDISH GRIN.", true, true)},
+        {"TEACUP", Item("TEACUP", 1, "A BROKEN TEACUP. LIKELY THE RESULT OF A SLAMMIN' TEA PARTY.", true, true)},
+        {"TEAPOT", Item("TEAPOT", 1, "AN EQUISITELY ORNATE TEAPOT. ONE WONDERS WHY IT REMAINS IN SUCH GOOD SHAPE.", true, true)}
         };
 
 // ACTION Class declaration
@@ -409,7 +418,7 @@ class moveAction: public Action {
             //DEBUG: cout << "call stop timer\n";
             } 
         else {
-            std::cout << "There is no door in that direction.\n";
+            std::cout << "THERE IS NO DOOR IN THAT DIRECTION.\nTRY 'LOOK ROOM' AGAIN";
         }
         }
     };
@@ -425,7 +434,7 @@ class takeAction: public Action {
             
             //Add the same item to the player inventory.
             player.takeItem(item);
-            cout << "you took the " << object << endl;
+            cout << "YOU TOOK THE " << object << endl;
             } 
         else{
             cout << "THERE IS NO SUCH ITEM IN THE ROOM" << endl;
@@ -488,20 +497,25 @@ class lookAction: public Action{
             cout << endl; 
         }
         else {
+            // Debug: cout << "entering the other else statement" << endl;
+            // Look in the gameItems map for the object, if valid and the player could "see it"
+            // because it is either in the current room OR in their inventnory, print description
+
             auto it = gameItems.find(object);
             if (it != gameItems.end()) {
-                it->second.getItemDescription(player, room);
-                //DEBUG: cout << "Yes, this item exists in the game" << endl;
-
+                if(player.hasItem(object)){
+                    it->second.getItemDescription(player, room);
+                    }
                 if (player.currentRoom->hasItem(object)) {
-                //DEBUG:    cout << "The item is also in this room" << endl;
-                }
+                    it->second.getItemDescription(player, room);
+                    }
                 else {
-                //DEBUG:    cout << "The item is NOT in this room" << endl;
+                    cout << "YOU CANT SEE THAT ITEM.\nIT IS NEITHER IN THE CURRENT ROOM \nOR YOUR INVENTORY" << endl;
+                        }
                 }
-                }
-                else {
-                    cout << "THERE IS NO ITEM WITH THAT NAME IN THE GAME" << endl;
+            // If it is not a valide gameitem, then spit out this message.
+            else {
+                cout << "THAT IS NOT A VALID OBJECT IN THE GAME\nPLEASE TRY AGAIN." << endl;
                 }
         }    
     }
@@ -1010,7 +1024,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
         rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
         rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200,true, true); //Room Timer of 200 prevents the player from dying in this room.
-        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200,true, false);//Room Timer of 200 prevents the player from dying in this room
+        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200,true, false);//
        
        // Assign the Doors to each of the rooms below Arguments to addDoor are the direction and pointer to the new room.
        rooms[0].addDoor("RIGHT", &rooms[5]); //You die if you go this way 
@@ -1040,7 +1054,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
         rooms[0].addRoomItem("KEYS", gameItems["KEYS"]);
         rooms[0].addRoomItem("TABLE", gameItems["TABLE"]);
         rooms[3].addRoomItem("FLAMINGO", gameItems["FLAMINGO"]);
-        rooms[7].addRoomItem("HATTER", gameItems["HATTER"]);
+        rooms[1].addRoomItem("HATTER", gameItems["HATTER"]);
         rooms[8].addRoomItem("CAT", gameItems["CAT"]);
         rooms[3].addRoomItem("TEACUP", gameItems["TEACUP"]);
         rooms[3].addRoomItem("TEAPOT", gameItems["TEAPOT"]);
@@ -1067,19 +1081,19 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 Arisu.setAliveState(false);
                 std::cout << "A SOFT WHIRRING SOUND STARTS TO EMINATE FROM ABOVE.\nYOU LOOK UP AND THE LAST THING YOU SEE IS A BRILLIANT FLASH OF LIGHT"<< endl;
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                std::cout << "A LASER HAS JUST PASSED THROUGH YOUR SKULL.\nYOU ARE DEAD."<< endl;
+                std::cout << "A LASER HAS JUST PASSED THROUGH YOUR SKULL."<< endl;
+                std::cout << endl;
                 return ;
                 }   
         }
     }
-
     
     // This function is the main game loop. It is called from main() and runs until the player dies or wins.
     void gameLoop() {
             string roomDescription = Arisu.currentRoom->getDescription();
             if (!roomDescription.empty()){
                 cout << roomDescription << endl;
-            }
+                }
             
             // ----INPUT FROM USER COLLECTED, VALIDATED AND PARSED -----
             cout << endl;
@@ -1131,7 +1145,8 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 }
 
                 string roomDescription = Arisu.currentRoom->getDescription();
-                // DEBUG cout << "print post-elevator description\n";
+                // DEBUG cout << "print First room (Room 0) description\n";
+                
                 if (!roomDescription.empty()){
                     //DEBUG:: cout << "room\n";
                     cout << roomDescription << endl;
@@ -1141,16 +1156,25 @@ class Game //Purpose of the class is construct/initialize the various elements i
                 //DEBUG:: cout << "completed parsing user input" << endl;
                 
                 checkRemainingTimer();
-                if (!Arisu.getAliveState()){
-                    break;
-                    }
-                else {// Get input from the user
-                    cout << endl;
-                    cout << "-> WHAT DO YOU WANT TO DO?"<< endl; 
-                    //std::cout << "\033c"; //Clear the screen
-                    }                                       
+                
+                // Check if player is Alive. If Dead OR in the Winning Room, then break). If alive, get input.
+                if (Arisu.currentRoom->getGameisWon() == true){
+                        cout << "YOU WON AND LIVE TO SEE ANOTHER DAY!!" << endl;
+                        break; //THIS IS THE EXIT FROM THE GAME LOOP
+                        }
+                        if (!Arisu.getAliveState()){
+                        // DEBUG 
+                        cout << "YOU DIED!" << endl;
+                        break; //THIS IS THE EXIT FROM THE GAME LOOP
+                        }
+                    else {// Get input from the user
+                        cout << endl;
+                        cout << "-> WHAT DO YOU WANT TO DO?"<< endl; 
+                        //std::cout << "\033c"; //Clear the screen
+                        }                                                      
             }
         }
+    
     // GAME RESET FUNCTION ----- 
     void resetGame()
         {
@@ -1186,7 +1210,7 @@ class Game //Purpose of the class is construct/initialize the various elements i
 int main(){
     std::cout << "\033c"; //Clear the screen
     char playAgain = 'y';
-    int gameAttempts_ = 0;
+    int gameAttempts_ = 1;
     Game game;
     //Import the game intro text:
     TextFileReader gameIntro("gameIntro.txt");
@@ -1196,8 +1220,7 @@ int main(){
     while (playAgain == 'y' || playAgain == 'Y'){
         game.gameLoop();
         
-        // Player death loop and game reset:
-        cout << "[QUEEN OF HEARTS]: YOU FAILED! WISH TO TRY AGAIN??" << endl;
+        cout << "Do you want to play again? (Y/N)" << endl;
         cin >> playAgain;
         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
         if(playAgain == 'y' || playAgain == 'Y'){
@@ -1209,7 +1232,8 @@ int main(){
 
     // cout << "Your score was: " << gameAttempts_ << endl;
     cout << "Thank you for playing. You attempted the game: "<< gameAttempts_ << " times." << endl;
-    cout << "Imagine if you had only 1 chance..." << endl;
+    cout << "Imagine if you had only a single chance..." << endl;
+    cout << "If you enjoyed this game, watch \"Alice in Borderlands\" on Netflix" << endl;
     cout << "Good bye!" << endl;
      
    return 0;
