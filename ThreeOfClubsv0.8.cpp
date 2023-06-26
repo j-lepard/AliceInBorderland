@@ -198,6 +198,7 @@ class Room
     bool explored_ = false; //false=NO, true=cleared, 
     bool isLight_ ; //when entering the room is it lit? 
     bool isSafe_; // is the room safe (ie no timer and wont die)
+    bool isWin_; // attribue of the final room. Implemented similarly to isSafe
     int roomTimer_= 45; // the amount of time the player is provided in the room before death. 
     bool timerRunning = false;
     std::chrono::system_clock::time_point startTime;
@@ -209,7 +210,7 @@ class Room
         
     // Constructors DEFINITION (removed the Declaration for later)
     Room(){}; //default constructor needed for <Array>
-    Room(string description, Player* p, int roomTimer, bool isSafe): description_(description), player_(p), roomTimer_(roomTimer), isSafe_(isSafe) {};; 
+    Room(string description, Player* p, int roomTimer, bool isSafe, bool isWin): description_(description), player_(p), roomTimer_(roomTimer), isSafe_(isSafe), isWin_(isWin) {};; 
    
     // Function to ADD the Door to the Room. This is one part where the MAP STL is required
     void addDoor(string direction, Room* room) {
@@ -239,8 +240,13 @@ class Room
             return "";
             }
         }
+    // check if room is safe (no timer) only on the 'atrium' and final rooms.
     bool getRoomisSafe() {
         return isSafe_;
+        }
+    // check condition of final room. All others are false
+    bool getGameisWon(){
+        return isWin_;
         }
     string lookRoom() {
         return description_; 
@@ -992,19 +998,19 @@ class Game //Purpose of the class is construct/initialize the various elements i
     Control controlArisu;    
     Game() : Arisu(), controlArisu(){
         // Define the game board, 9 rooms, 2 to outside, 1 to win and 1 more as the 'ante room'.
-        rooms[0]= Room("YOU IN A DULL ROOM, WITH NO WINDOWS.\nTHERE IS A SMALL TABLE.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", TO THE RIGHT SAYS \"DRINK ME\"", &Arisu,120,false);
-        rooms[1]= Room("YOU ENTERED THE NEXT ROOM\nYOU SEE A PERSON IN THE ROOM.\nTO YOUR RIGHT IS A DOOR THAT READS \"EAT ME\". STRAIGHT AHEAD THE DOOR READS \"DRINK ME\" ", &Arisu,55,false);
-        rooms[2]= Room("YOU ESCAPED THE PREVIOUS ROOM\n FEW HAVE MADE IT EVEN THIS FAR.\nTO YOUR RIGHT THERE IS A DOOR THAT READS \"EAT ME\" AND ON YOUR LEFT, A DOOR THAT READS \"DRINK ME\"", &Arisu,60,false);
-        rooms[3]= Room("YOU ENTERED THE FOURTH ROOM. THERE ARE TWO DOORS. THE DOOR TO THE RIGHT SAYS \"EAT ME\", THE DOOR AHEAD SAYS \"DRINK ME\"", &Arisu,55,false);
-        rooms[4]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false);
-        rooms[5]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false);
-        rooms[6]= Room("YOU FEEL VERY CLOSE... THE DOOR TO THE RIGHT SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,30,false);
-        rooms[7]= Room("YOU ENTERED YET ANOTHER ROOM. THE DOOR TO THE RIGHT SAYS \"DRINK ME\", THE DOOR AHEAD SAYS \"EAT ME\"", &Arisu,40,false);
-        rooms[8]= Room("YOU ENTERED A ROOM THAT LOOKS EXACTLY THE SAME AS ALL PREVIOUS.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,45,false);
-        rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false);
-        rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false);
-        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200,true); //Room Timer of 200 prevents the player from dying in this room.
-        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200,true);//Room Timer of 200 prevents the player from dying in this room
+        rooms[0]= Room("YOU IN A DULL ROOM, WITH NO WINDOWS.\nTHERE IS A SMALL TABLE.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", TO THE RIGHT SAYS \"DRINK ME\"", &Arisu,120,false, false);
+        rooms[1]= Room("YOU ENTERED THE NEXT ROOM\nYOU SEE A PERSON IN THE ROOM.\nTO YOUR RIGHT IS A DOOR THAT READS \"EAT ME\". STRAIGHT AHEAD THE DOOR READS \"DRINK ME\" ", &Arisu,55,false, false);
+        rooms[2]= Room("YOU ESCAPED THE PREVIOUS ROOM\n FEW HAVE MADE IT EVEN THIS FAR.\nTO YOUR RIGHT THERE IS A DOOR THAT READS \"EAT ME\" AND ON YOUR LEFT, A DOOR THAT READS \"DRINK ME\"", &Arisu,60,false, false);
+        rooms[3]= Room("YOU ENTERED THE FOURTH ROOM. THERE ARE TWO DOORS. THE DOOR TO THE RIGHT SAYS \"EAT ME\", THE DOOR AHEAD SAYS \"DRINK ME\"", &Arisu,55,false, false);
+        rooms[4]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
+        rooms[5]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
+        rooms[6]= Room("YOU FEEL VERY CLOSE... THE DOOR TO THE RIGHT SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,30,false, false);
+        rooms[7]= Room("YOU ENTERED YET ANOTHER ROOM. THE DOOR TO THE RIGHT SAYS \"DRINK ME\", THE DOOR AHEAD SAYS \"EAT ME\"", &Arisu,40,false, false);
+        rooms[8]= Room("YOU ENTERED A ROOM THAT LOOKS EXACTLY THE SAME AS ALL PREVIOUS.\nTHERE ARE TWO DOORS. THE DOOR AHEAD SAYS \"EAT ME\", THE DOOR TO THE LEFT SAYS \"DRINK ME\"", &Arisu,45,false, false);
+        rooms[9]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
+        rooms[10]= Room("YOU ENTERED THE ROOM....", &Arisu,0,false, false);
+        rooms[11]= Room("YOU ENTERED ROOM 3 AND WON!!", &Arisu,200,true, true); //Room Timer of 200 prevents the player from dying in this room.
+        rooms[12]= Room("YOU ARE STANDING BEFORE A RED ELEVATOR DOOR.\nA RABBIT, STANDING ON HIS HIND LEGS, DISAPPEARS THROUGH THE DOOR\nGO STRAIGHT TO ENTER THE RABBIT HOLE", &Arisu,200,true, false);//Room Timer of 200 prevents the player from dying in this room
        
        // Assign the Doors to each of the rooms below Arguments to addDoor are the direction and pointer to the new room.
        rooms[0].addDoor("RIGHT", &rooms[5]); //You die if you go this way 
