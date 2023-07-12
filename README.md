@@ -20,4 +20,4 @@
 ## Thing you cannot do yet: 
 - other actions - like open/use/
 - interact with other characters (ie talk)
-- a "win" flag or loop.
+  
