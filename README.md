@@ -1,5 +1,5 @@
 # AliceInBorderland
- a very simple text game - thats not completed. 
+ Go down the rabbit hole as Arisu and try to escape from the building before time runs out! 
 
 ## Installation
 - Windows only (sorry!)
